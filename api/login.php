@@ -4,6 +4,7 @@
     $output = array();
     $username = $_GET['username'] ? $_GET['username'] : '';
     $passwd = $_GET['passwd'] ? $_GET['passwd'] : '';
+    $passwd = md5($passwd);
 
     $query_RecLogin = "SELECT * FROM `memberdata` WHERE `m_username`='".$username."'";
     $RecLogin = mysql_query($query_RecLogin);
