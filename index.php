@@ -32,8 +32,10 @@
     <link rel="stylesheet" type="text/css" href="css/dhtmlxcalendar.css"/>
     <script src="js/dhtmlxcalendar.js"></script>
     <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
+    <script type="text/javascript" src="js/bookRoom.js"></script>
     <script type="text/javascript">
-      var temp = new Array();
+      var saveID = new Array();
+      var sBookItem;
       $(document).ready(function(){
         if(getCookie("stat") != "success"){
           $("#login").click(function(){  
@@ -66,39 +68,66 @@
           document.getElementById('userDiv').style.display='';
           document.getElementById('loginDiv').style.display='none';
           document.getElementById('user').innerHTML=getCookie("user");
+          document.getElementById('liMember').style.display="block";
           $("#logout").click(function(event) {
             document.cookie = "stat=;";
             document.cookie = "user=;";
             document.getElementById('userDiv').style.display='none';
             document.getElementById('loginDiv').style.display='';
+            window.location.reload(true);
           });
         }
 
         $("#searchRoom").click(function(event) {
           var date = $("#calendar_input").val();
+          var iUser = $("#user").val();
+          sBookItem = new bookItem(date,iUser);
           $.ajax({
             url: './api/getBooked.php?date='+date,
             type: 'GET',
             dataType: 'json',
             success: function(json){
-              /*alert(temp.length);
-              if(temp.length!=0){
-                alert("QQQ");
-                for(var i = 0 ; i < temp.length ; i++){
-                    document.getElementById(temp[i]).style.background="#FDFF73";
+              if(saveID.length!=0 ){
+                for(var i = 0 ; i < saveID.length ; i++){
+                    if(saveID[i] % 2 == 0)
+                      document.getElementById(saveID[i]).style.background="#f9f9f9";
+                    else
+                      document.getElementById(saveID[i]).style.background="";
                   }
-              }*/
+              }
               if(json["stat"]==true){
-                alert(json["bookedRooms"]);
-                temp = json["bookedRooms"].split(";");
-                if(json["bookedRooms"]!='')
-                  for(var i = 0 ; i < temp.length ; i++){
-                    document.getElementById(temp[i]).style.background="#da4f49";
+                if(json["bookedRooms"]!=''){
+                    saveID = json["bookedRooms"].split(";");
+                    for(var i = 0 ; i < saveID.length ; i++){
+                     document.getElementById(saveID[i]).style.background="#da4f49";
+                  }
                 }
               }
               else{
                 alert("false");
               }
+            },
+            error: function(){
+              alert("error");
+            }
+          });
+        });
+
+        $("#bookRoom").click(function(event) {
+          sBookItem.rooms = sBookItem.rooms.substring(0,sBookItem.rooms.lastIndexOf(";"));
+          sBookItem.user = document.getElementById("user").innerHTML;
+          alert(sBookItem.user);
+          $.ajax({
+            url: './api/bookRooms.php?date='+sBookItem.date+'&rooms='+sBookItem.rooms+'&user='+sBookItem.user,
+            type: 'GET',
+            dataType: 'json',
+            success: function(json){
+              if(json["stat"]==true){
+                alert("true");
+                document.getElementById("searchRoom").click();
+              }
+              else
+                alert("false");
             },
             error: function(){
               alert("error");
@@ -144,19 +173,36 @@
         var tfcol = document.getElementById('tfhover').rows[0].cells.length;
         var tbRow=[];
         var tbCol=[];
-        var lastColor;
+        var lastColor,setClick=false;
         for (var i=1;i<tfrow;i++) {
-          for(var j=0;j<tfcol;j++){
+          for(var j=1;j<tfcol;j++){
             tbRow[i]=document.getElementById('tfhover').rows[i];
             tbCol[j]=document.getElementById('tfhover').rows[i].cells[j];
       
             tbCol[j].onmouseover = function(){
-              lastColor = this.style.backgroundColor;
-              if(lastColor != "rgb(218, 79, 73)")
+              setClick = false;
+              lastColor = this.style.background;
+              if(lastColor != "rgb(218, 79, 73)" && lastColor != "rgb(30, 197, 229)")
                 this.style.backgroundColor = '#FDFF73';
             };
             tbCol[j].onmouseout = function(){
+              if(!setClick)
                 this.style.backgroundColor = lastColor;
+            };
+            tbCol[j].onmousedown =function(){
+              if(this.style.backgroundColor != "rgb(218, 79, 73)")
+                if(this.style.backgroundColor == "rgb(30, 197, 229)"){
+                  sBookItem.deleteRoom(this.id);
+                  if(this.id % 2 == 0)
+                    this.style.backgroundColor = '#f9f9f9';
+                  else
+                   this.style.backgroundColor = '';
+                }
+                else{
+                  sBookItem.addRoom(this.id);
+                  this.style.backgroundColor = '#1ec5e5';
+                }
+              setClick = true;
             };
           }
         }
@@ -180,6 +226,7 @@
               <li class="active" id="liHome"><a id="mHome" href="#home" onClick="showLayer(this,'home','liHome');">首頁</a></li>
               <li id="liBook"><a id="mBook" href="#book" onClick="showLayer(this,'book','liBook');">教室預訂</a></li>
               <li id="liContact"><a id="mContact" href="#contact" onClick="showLayer(this,'contact','liContact');">商品列表</a></li>
+              <li id="liMember" style="display:none"><a id="mMember" href="#" onClick="//showLayer(this,'contact','liContact');">會員中心</a></li>
             </ul>
             <form class="navbar-form pull-right" >
               <div id="userDiv" style="display:none">
@@ -229,9 +276,9 @@
 
       <div id="book" style="display:none">
         <div class="hero-unit">
-          <h1>BOOK</h1>
-          <p>This is a template for a simple marketing or informational website. It includes a large callout called the hero unit and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
-          <p><a href="#" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
+          <h1>教室預訂</h1>
+          <p>如欲預訂教室，請先選擇日期後點選查詢，並於時間表中點選您欲租借的教室與對應時間，紅色區間為已被預訂時間無法點選，點選後出現藍色區間為您選擇的教室時間，選擇完畢後點選預訂，便完成預訂。</p>
+          <!--<p><a href="#" class="btn btn-primary btn-large">Learn more &raquo;</a></p>-->
         </div>
 
       <!-- Example row of columns -->
@@ -241,6 +288,7 @@
               <input class="span2" type="text" id="calendar_input" placeholder="2014-01-01">
               <span><img id="calendar_icon" src="./imgs/dhxcalendar_skyblue/calendar.gif" border="0"></span>
               <button type="submit" class="btn" id="searchRoom">查詢</button>
+              <button type="submit" class="btn" id="bookRoom">預訂</button>
             </form>
             <br>
             <table id="tfhover" class="table table-striped table-bordered" align="center">
@@ -301,7 +349,7 @@
       <hr>
 
       <footer>
-        <p>&copy; 2014 By megshao</p>
+        <p align="center">&copy; 2014 By megshao</p>
       </footer>
     </div> 
   </body>
