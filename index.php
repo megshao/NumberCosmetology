@@ -30,16 +30,19 @@
                     <link rel="apple-touch-icon-precomposed" href="../ico/apple-touch-icon-57-precomposed.png">
                                    <link rel="shortcut icon" href="../ico/favicon.png">
     <link rel="stylesheet" type="text/css" href="css/dhtmlxcalendar.css"/>
+    <!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>-->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="js/dhtmlxcalendar.js"></script>
-    <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>
     <script type="text/javascript" src="js/bookRoom.js"></script>
+    <script src="js/bootstrap.js"></script>
+    <script src="js/apply.js"></script>
     <script type="text/javascript">
       var saveID = new Array();
       var sBookItem;
       $(document).ready(function(){
         if(getCookie("stat") != "success"){
           $("#login").click(function(){  
-            var username=$("#username").val();
+            var username=$("#l_username").val();
             var password=$("#password").val();
             $.ajax({
               type: "GET",
@@ -53,7 +56,7 @@
                 }
                 else{
                   alert("帳號或密碼錯誤！");
-                  document.getElementById('username').value="";
+                  document.getElementById('l_username').value="";
                   document.getElementById('password').value="";
                 }
               },
@@ -74,13 +77,14 @@
             document.cookie = "user=;";
             document.getElementById('userDiv').style.display='none';
             document.getElementById('loginDiv').style.display='';
-            window.location.reload(true);
+            document.getElementById('liMember').style.display='none';
+            //window.location.reload(true);
           });
         }
 
         $("#searchRoom").click(function(event) {
           var date = $("#calendar_input").val();
-          var iUser = $("#user").val();
+          var iUser = document.getElementById("user").innerHTML;
           sBookItem = new bookItem(date,iUser);
           $.ajax({
             url: './api/getBooked.php?date='+date,
@@ -134,6 +138,33 @@
             }
           });
         });
+
+        $("#sendApply").click(function(event) {
+          if(checkForm()){
+            var sex ;
+            if(document.getElementById('m_sex').checked)
+              sex = '女';
+            else
+              sex = '男';        
+            $.ajax({
+              url: './api/addMember.php?username='+document.getElementById('m_username').value+'&passwd='+document.getElementById('m_passwd').value
+                    +'&name='+document.getElementById('m_name').value+'&sex='+sex+'&birthday='+document.getElementById('m_birthday').value
+                    +'&email='+document.getElementById('m_email').value+'&phone='+document.getElementById('m_phone').value+'&address='+document.getElementById('m_address').value,
+              type: 'GET',
+              dataType: 'json',
+              success: function(json){
+                alert(json['info']);
+                if(json['code'] == 200)
+                  dataClean();
+              },
+              error: function(){
+                alert('error');
+              }
+            });
+          };
+            
+            $('#applyDia').modal('hide');
+          });
       });
 
       function getCookie(cname){
@@ -234,9 +265,10 @@
                 <button type="submit" class="btn" id="logout">登出</button>
               </div>
               <div id="loginDiv">
-                <input class="span2" type="text" placeholder="帳號" id="username">
+                <input class="span2" type="text" placeholder="帳號" id="l_username">
                 <input class="span2" type="password" placeholder="密碼" id="password">
                 <button type="submit" class="btn" id="login">登入</button>
+                <button type="submit" class="btn" id="apply" data-toggle="modal" data-target="#applyDia">申請</button>
               </div>
             </form>
           </div><!--/.nav-collapse -->
@@ -347,6 +379,58 @@
       </div>
 
       <hr>
+
+        <!-- Modal -->
+      <div class="modal hide fade " id="applyDia" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+          <div class="modal-content">
+            <div class="modal-header">
+              <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+              <h4 class="modal-title" id="myModalLabel">帳號申請</h4>
+            </div>
+            <div class="modal-body">
+                <p><strong>使用帳號</strong>：
+                <input name="m_username" type="text" class="normalinput" id="m_username">
+                <font color="#FF0000">*</font><br>
+                <span class="smalltext">請填入5~12個字元以內的小寫英文字母、數字、以及_ 符號。</span></p>
+                <p><strong>使用密碼</strong>：
+                <input name="m_passwd" type="password" class="normalinput" id="m_passwd">
+                <font color="#FF0000">*</font><br>
+                <span class="smalltext">請填入5~10個字元以內的英文字母、數字、以及各種符號組合，</span></p>
+                <p><strong>確認密碼</strong>：
+                <input name="m_passwdrecheck" type="password" class="normalinput" id="m_passwdrecheck">
+                <font color="#FF0000">*</font> <br>
+                <span class="smalltext">再輸入一次密碼</span></p>
+                <hr size="1" />
+                <p class="heading">個人資料</p>
+                <p><strong>真實姓名</strong>：
+                <input name="m_name" type="text" class="normalinput" id="m_name">
+                <font color="#FF0000">*</font> </p>
+                <p><strong>性　　別</strong>：
+                <input name="m_sex" type="radio" value="女" id="m_sex" checked>女
+                <input name="m_sex" type="radio" value="男" >男
+                <font color="#FF0000">*</font></p>
+                <p><strong>生　　日</strong>：
+                <input name="m_birthday" type="text" class="normalinput" id="m_birthday">
+                <font color="#FF0000">*</font> <br>
+                <span class="smalltext">為西元格式(YYYY-MM-DD)。</span></p>
+                <p><strong>電子郵件</strong>：
+                <input name="m_email" type="text" class="normalinput" id="m_email">
+                <font color="#FF0000">*</font> </p>
+                <p class="smalltext">請確定此電子郵件為可使用狀態，以方便未來系統使用，如補寄會員密碼信。</p>
+                <p><strong>電　　話</strong>：
+                <input name="m_phone" type="text" class="normalinput" id="m_phone"></p>
+                <p><strong>住　　址</strong>：
+                <input name="m_address" type="text" class="normalinput" id="m_address" size="40"></p>
+                <p> <font color="#FF0000">*</font> 表示為必填的欄位</p>
+            </div>
+            <div class="modal-footer">
+              <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+              <button type="button" class="btn btn-primary" id="sendApply">送出申請</button>
+            </div>
+          </div>
+        </div>
+      </div>
 
       <footer>
         <p align="center">&copy; 2014 By megshao</p>
