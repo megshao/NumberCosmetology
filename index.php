@@ -78,48 +78,50 @@
             document.getElementById('userDiv').style.display='none';
             document.getElementById('loginDiv').style.display='';
             document.getElementById('liMember').style.display='none';
-            //window.location.reload(true);
           });
         }
 
         $("#searchRoom").click(function(event) {
           var date = $("#calendar_input").val();
-          var iUser = document.getElementById("user").innerHTML;
-          sBookItem = new bookItem(date,iUser);
-          $.ajax({
-            url: './api/getBooked.php?date='+date,
-            type: 'GET',
-            dataType: 'json',
-            success: function(json){
-              if(saveID.length!=0 ){
-                for(var i = 0 ; i < saveID.length ; i++){
-                    if(saveID[i] % 2 == 0)
-                      document.getElementById(saveID[i]).style.background="#f9f9f9";
-                    else
-                      document.getElementById(saveID[i]).style.background="";
-                  }
-              }
-              if(json["stat"]==true){
-                if(json["bookedRooms"]!=''){
-                    saveID = json["bookedRooms"].split(";");
-                    for(var i = 0 ; i < saveID.length ; i++){
-                     document.getElementById(saveID[i]).style.background="#da4f49";
+          var iUser = $("#user").val();
+            sBookItem = new bookItem(date,iUser);
+            $.ajax({
+              url: './api/getBooked.php?fun=date&date='+date,
+              type: 'GET',
+              dataType: 'json',
+              success: function(json){
+                if(saveID.length!=0 ){
+                  for(var i = 0 ; i < saveID.length ; i++){
+                      if(saveID[i] % 2 == 0)
+                        document.getElementById(saveID[i]).style.background="#f9f9f9";
+                      else
+                        document.getElementById(saveID[i]).style.background="";
+                    }
+                }
+                if(json["stat"]==true){
+                  if(json["bookedRooms"]!=''){
+                      saveID = json["bookedRooms"].split(";");
+                      for(var i = 0 ; i < saveID.length ; i++){
+                       document.getElementById(saveID[i]).style.background="#da4f49";
+                    }
                   }
                 }
+                else{
+                  alert("false");
+                }
+              },
+              error: function(){
+                alert("error");
               }
-              else{
-                alert("false");
-              }
-            },
-            error: function(){
-              alert("error");
-            }
-          });
+            });
+          
         });
 
         $("#bookRoom").click(function(event) {
           sBookItem.rooms = sBookItem.rooms.substring(0,sBookItem.rooms.lastIndexOf(";"));
-          sBookItem.user = document.getElementById("user").innerHTML;
+          sBookItem.user = getCookie(user);
+          alert(sBookItem.user);
+          if(sBookItem.user != ""){
           alert(sBookItem.user);
           $.ajax({
             url: './api/bookRooms.php?date='+sBookItem.date+'&rooms='+sBookItem.rooms+'&user='+sBookItem.user,
@@ -137,6 +139,10 @@
               alert("error");
             }
           });
+          }
+          else{
+            alert("請先登入會員！");
+          }
         });
 
         $("#sendApply").click(function(event) {
@@ -165,6 +171,30 @@
             
             $('#applyDia').modal('hide');
           });
+
+        $("#a_Manage").click(function(event) {
+          $.ajax({
+           type: "GET",
+           url: "./api/getBooked.php?fun=user&username="+getCookie("user"),
+            dataType : "json",
+           success: function(json){
+              for(var count = 1;json["data"][count] != undefined ;count++){
+                var num = document.getElementById("searchBookedTable").rows.length;
+                var Tr = document.getElementById("searchBookedTable").insertRow(num);
+                Td = Tr.insertCell(Tr.cells.length);
+                Td.innerHTML= json["data"][count]["date"];
+                Td = Tr.insertCell(Tr.cells.length);
+                Td.innerHTML= json["data"][count]["rooms"]
+                Td = Tr.insertCell(Tr.cells.length);
+                Td.innerHTML= json["data"][count]["createTime"]
+                Td = Tr.insertCell(Tr.cells.length);
+              }   
+            },
+           error: function() {
+               alert("error");
+           }
+          });
+        });
       });
 
       function getCookie(cname){
@@ -185,8 +215,8 @@
         if ( currentLayer != sender.id ) {  
           document.getElementById(currentDiv).style.display="none";
           document.getElementById(targetDiv).style.display="block";
-          document.getElementById(currentLi).className="";
-          document.getElementById(targetLi).className="active";
+          document.getElementById(currentLi).className=document.getElementById(currentLi).className.replace("active","");
+          document.getElementById(targetLi).className+=" active";
         } 
         currentLayer = sender.id;
         currentDiv = targetDiv;
@@ -257,7 +287,12 @@
               <li class="active" id="liHome"><a id="mHome" href="#home" onClick="showLayer(this,'home','liHome');">首頁</a></li>
               <li id="liBook"><a id="mBook" href="#book" onClick="showLayer(this,'book','liBook');">教室預訂</a></li>
               <li id="liContact"><a id="mContact" href="#contact" onClick="showLayer(this,'contact','liContact');">商品列表</a></li>
-              <li id="liMember" style="display:none"><a id="mMember" href="#" onClick="//showLayer(this,'contact','liContact');">會員中心</a></li>
+              <li id="liMember" style="display:none" class="dropdown"><a id="mMember" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown" >會員中心<b class="caret"></b></a>
+                <ul class="dropdown-menu" role="menu" aria-labelledby="mMember">
+                  <li role="presentation"><a id="a_Manage" role="menuitem" tabindex="-1" href="#" onClick="showLayer(this,'m_Manage','liMember');">訂單查詢</a></li>
+                  <li role="presentation"><a role="menuitem" tabindex="-1" href="#">會員管理2</a></li>
+                </ul>
+              </li>
             </ul>
             <form class="navbar-form pull-right" >
               <div id="userDiv" style="display:none">
@@ -360,23 +395,33 @@
 
       <!-- Example row of columns -->
         <div class="row">
-          <div class="span4">
-            <h2>Heading</h2>
-            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-            <p><a class="btn" href="#">View details &raquo;</a></p>
-          </div>
-          <div class="span4">
-            <h2>Heading</h2>
-            <p>Donec id elit non mi porta gravida at eget metus. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus. Etiam porta sem malesuada magna mollis euismod. Donec sed odio dui. </p>
-            <p><a class="btn" href="#">View details &raquo;</a></p>
-          </div>
-          <div class="span4" id="about">
-            <h2>Heading</h2>
-            <p>Donec sed odio dui. Cras justo odio, dapibus ac facilisis in, egestas eget quam. Vestibulum id ligula porta felis euismod semper. Fusce dapibus, tellus ac cursus commodo, tortor mauris condimentum nibh, ut fermentum massa justo sit amet risus.</p>
-            <p><a class="btn" href="#">View details &raquo;</a></p>
+          
+        </div>
+      </div>
+
+      <div id="m_Manage" style="display:none">
+        <div class="hero-unit">
+          <h1>訂單查詢</h1>
+          <p>This is a template for a simple marketing or informational website. It includes a large callout called the hero unit and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
+          <p><a href="#" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
+        </div>
+
+      <!-- Example row of columns -->
+        <div class="row">
+          <div class="span12">
+            <table id="searchBookedTable" class="table table-striped table-bordered" align="center">
+              <caption></caption>
+                <tr>
+                  <td>日期</td>
+                  <td>預訂教室</td>
+                  <td>下訂時間</td>
+                  <td>管理</td>
+                </tr>
+            </table>
           </div>
         </div>
       </div>
+
 
       <hr>
 
