@@ -40,7 +40,7 @@
       var saveID = new Array();
       var sBookItem;
       $(document).ready(function(){
-        if(getCookie("stat") != "success"){
+        if(getCookie("stat") != "success" ){
           $("#login").click(function(){  
             var username=$("#l_username").val();
             var password=$("#password").val();
@@ -78,12 +78,14 @@
             document.getElementById('userDiv').style.display='none';
             document.getElementById('loginDiv').style.display='';
             document.getElementById('liMember').style.display='none';
+            window.location.reload(true);
+            return false;
           });
         }
 
         $("#searchRoom").click(function(event) {
           var date = $("#calendar_input").val();
-          var iUser = $("#user").val();
+          iUser = getCookie("user");
             sBookItem = new bookItem(date,iUser);
             $.ajax({
               url: './api/getBooked.php?fun=date&date='+date,
@@ -114,26 +116,24 @@
                 alert("error");
               }
             });
-          
+          return false;
         });
 
         $("#bookRoom").click(function(event) {
           sBookItem.rooms = sBookItem.rooms.substring(0,sBookItem.rooms.lastIndexOf(";"));
-          sBookItem.user = getCookie(user);
-          alert(sBookItem.user);
+          sBookItem.user = getCookie("user");
           if(sBookItem.user != ""){
-          alert(sBookItem.user);
           $.ajax({
             url: './api/bookRooms.php?date='+sBookItem.date+'&rooms='+sBookItem.rooms+'&user='+sBookItem.user,
             type: 'GET',
             dataType: 'json',
             success: function(json){
               if(json["stat"]==true){
-                alert("true");
+                
                 document.getElementById("searchRoom").click();
               }
               else
-                alert("false");
+                alert("預訂失敗！");
             },
             error: function(){
               alert("error");
@@ -143,6 +143,7 @@
           else{
             alert("請先登入會員！");
           }
+          return false;
         });
 
         $("#sendApply").click(function(event) {
@@ -168,8 +169,8 @@
               }
             });
           };
-            
             $('#applyDia').modal('hide');
+            return false;
           });
 
         $("#a_Manage").click(function(event) {
@@ -194,6 +195,7 @@
                alert("error");
            }
           });
+          //return false;
         });
       });
 
