@@ -30,7 +30,6 @@
                     <link rel="apple-touch-icon-precomposed" href="../ico/apple-touch-icon-57-precomposed.png">
                                    <link rel="shortcut icon" href="../ico/favicon.png">
     <link rel="stylesheet" type="text/css" href="css/dhtmlxcalendar.css"/>
-    <!--<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6/jquery.min.js"></script>-->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="js/dhtmlxcalendar.js"></script>
     <script type="text/javascript" src="js/bookRoom.js"></script>
@@ -39,8 +38,10 @@
     <script type="text/javascript">
       var saveID = new Array();
       var sBookItem;
+      var bookNum = 0;
       $(document).ready(function(){
         if(getCookie("stat") != "success" ){
+          var username;
           $("#login").click(function(){  
             var username=$("#l_username").val();
             var password=$("#password").val();
@@ -52,6 +53,7 @@
                 if(json["info"]=="success"){
                   document.cookie = "stat=success; " ; 
                   document.cookie = "user="+username+"; ";
+
                   window.location.reload(true);
                 }
                 else{
@@ -64,17 +66,31 @@
                  alert("error");
               }
             });
-          return false;
+            $.ajax({
+                    url: './api/pointManage.php?fun=get&user='+username,
+                    type: 'GET',
+                    dataType: 'json',
+                    success: function(json){
+                      if(json["stat"] == true)
+                        document.cookie = "point="+json["point"]+"; ";
+                    },
+                    error: function(){
+                      alert("error");
+                    }
+                  });
+            return false;
           });
         }
         else{
           document.getElementById('userDiv').style.display='';
           document.getElementById('loginDiv').style.display='none';
           document.getElementById('user').innerHTML=getCookie("user");
+          document.getElementById('point').innerHTML=getCookie("point")+'點';
           document.getElementById('liMember').style.display="block";
           $("#logout").click(function(event) {
             document.cookie = "stat=;";
             document.cookie = "user=;";
+            document.cookie = "point=;";
             document.getElementById('userDiv').style.display='none';
             document.getElementById('loginDiv').style.display='';
             document.getElementById('liMember').style.display='none';
@@ -119,26 +135,44 @@
           return false;
         });
 
-        $("#bookRoom").click(function(event) {
+        $("#bookRoom").click(function(event) { 
           sBookItem.rooms = sBookItem.rooms.substring(0,sBookItem.rooms.lastIndexOf(";"));
           sBookItem.user = getCookie("user");
+          var userCheck = confirm("您所預訂的教室時間需花費"+sBookItem.numOfItem+"點，確定送出?");
+          if(userCheck)
           if(sBookItem.user != ""){
-          $.ajax({
-            url: './api/bookRooms.php?date='+sBookItem.date+'&rooms='+sBookItem.rooms+'&user='+sBookItem.user,
-            type: 'GET',
-            dataType: 'json',
-            success: function(json){
-              if(json["stat"]==true){
-                
-                document.getElementById("searchRoom").click();
-              }
-              else
-                alert("預訂失敗！");
-            },
-            error: function(){
-              alert("error");
-            }
-          });
+              $.ajax({//送出訂單前確認點數足夠
+                      url: './api/pointManage.php?fun=use&user='+getCookie("user")+'&num='+sBookItem.numOfItem,
+                      type: 'GET',
+                      dataType: 'json',
+                     success: function(json){
+                       if(json["stat"] == true){
+                          document.cookie = "point="+json["point"]+"; ";
+                          $.ajax({
+                            url: './api/bookRooms.php?date='+sBookItem.date+'&rooms='+sBookItem.rooms+'&user='+sBookItem.user,
+                            type: 'GET',
+                            dataType: 'json',
+                            success: function(json){
+                            if(json["stat"]==true){
+                              document.getElementById("searchRoom").click();
+                              document.getElementById("point").innerHTML=getCookie("point")+'點';
+                              alert("預定成功！請至訂單查詢確認");
+                            }
+                            else
+                            alert("預訂失敗！");
+                            },
+                            error: function(){
+                              alert("error");
+                            }
+                          });
+                        }
+                       else 
+                        alert(json["info"]);
+                     },
+                      error: function(){
+                        alert("error");
+                     }
+              });
           }
           else{
             alert("請先登入會員！");
@@ -195,7 +229,6 @@
                alert("error");
            }
           });
-          //return false;
         });
       });
 
@@ -231,6 +264,17 @@
         myCalendar = new dhtmlXCalendarObject(["calendar_input"]);
       }
 
+      function compareDate(saveDate){
+        var tempDate = saveDate.split("-");
+        var dt = new Date();
+        var curDate = new Array(dt.getFullYear(),dt.getMonth()+1,dt.getDate());
+        for(var i = 0 ; i < 3; i++){
+          if(curDate[i] > tempDate[i])
+            return true;
+        }
+        return false;
+      }
+
       window.onload=function(){
         var tfrow = document.getElementById('tfhover').rows.length;
         var tfcol = document.getElementById('tfhover').rows[0].cells.length;
@@ -253,6 +297,7 @@
                 this.style.backgroundColor = lastColor;
             };
             tbCol[j].onmousedown =function(){
+              if(!compareDate(sBookItem.date)){
               if(this.style.backgroundColor != "rgb(218, 79, 73)")
                 if(this.style.backgroundColor == "rgb(30, 197, 229)"){
                   sBookItem.deleteRoom(this.id);
@@ -266,6 +311,10 @@
                   this.style.backgroundColor = '#1ec5e5';
                 }
               setClick = true;
+            }
+            else{
+              alert("預訂日期必須為今天以後！");
+            }
             };
           }
         }
@@ -299,6 +348,7 @@
             <form class="navbar-form pull-right" >
               <div id="userDiv" style="display:none">
                 <a class="brand" id="user"></a>
+                <a class="brand" id="point"></a>
                 <button type="submit" class="btn" id="logout">登出</button>
               </div>
               <div id="loginDiv">
