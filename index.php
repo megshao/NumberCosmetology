@@ -17,18 +17,6 @@
       }
     </style>
     <link href="css/bootstrap-responsive.css" rel="stylesheet">
-
-    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <!--[if lt IE 9]>
-      <script src="../js/html5shiv.js"></script>
-    <![endif]-->
-
-    <!-- Fav and touch icons -->
-    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="../ico/apple-touch-icon-144-precomposed.png">
-    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="../ico/apple-touch-icon-114-precomposed.png">
-      <link rel="apple-touch-icon-precomposed" sizes="72x72" href="../ico/apple-touch-icon-72-precomposed.png">
-                    <link rel="apple-touch-icon-precomposed" href="../ico/apple-touch-icon-57-precomposed.png">
-                                   <link rel="shortcut icon" href="../ico/favicon.png">
     <link rel="stylesheet" type="text/css" href="css/dhtmlxcalendar.css"/>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
     <script src="js/dhtmlxcalendar.js"></script>
@@ -36,9 +24,7 @@
     <script src="js/bootstrap.js"></script>
     <script src="js/apply.js"></script>
     <script type="text/javascript">
-      var saveID = new Array();
       var sBookItem;
-      var bookNum = 0;
       $(document).ready(function(){
         if(getCookie("stat") != "success" ){
           var username;
@@ -103,23 +89,24 @@
         $("#searchRoom").click(function(event) {
           var date = $("#calendar_input").val();
           iUser = getCookie("user");
+          if(date != ""){
             sBookItem = new bookItem(date,iUser);
             $.ajax({
               url: './api/getBooked.php?fun=date&date='+date,
               type: 'GET',
               dataType: 'json',
               success: function(json){
-                if(saveID.length!=0 ){
-                  for(var i = 0 ; i < saveID.length ; i++){
-                      if(saveID[i] % 2 == 0)
-                        document.getElementById(saveID[i]).style.background="#f9f9f9";
+                for(var i = 1; i < 8 ; i++){
+                  for(var j = 1; j < 11 ; j++){
+                    if(j % 2 == 0)
+                        document.getElementById(i*100 + j).style.background="#f9f9f9";
                       else
-                        document.getElementById(saveID[i]).style.background="";
-                    }
+                        document.getElementById(i*100 + j).style.background="";
+                  }
                 }
                 if(json["stat"]==true){
                   if(json["bookedRooms"]!=''){
-                      saveID = json["bookedRooms"].split(";");
+                      var saveID = json["bookedRooms"].split(";");
                       for(var i = 0 ; i < saveID.length ; i++){
                        document.getElementById(saveID[i]).style.background="#da4f49";
                     }
@@ -133,6 +120,10 @@
                 alert("error");
               }
             });
+          }
+          else{
+            alert("請輸入日期！");
+          }
           return false;
         });
 
@@ -207,6 +198,20 @@
             $('#applyDia').modal('hide');
             return false;
           });
+
+        $("#addPointBtn").click(function(event) {
+          $.ajax({
+            url: './api/pointManage.php?fun=add&user='+$("#a_username").val()+'&num='+$("#numPoint").val(),
+            type: 'GET',
+            dataType: 'json',
+            success: function(json){
+              alert("帳號:"+$("#a_username").val()+"現在有"+json["point"]+"點");
+            },
+            error: function(){
+              alert("error");
+            }
+          });
+        });
 
         $("#a_Manage").click(function(event) {
           $.ajax({
@@ -404,6 +409,7 @@
         <div class="hero-unit">
           <h1>教室預訂</h1>
           <p>如欲預訂教室，請先選擇日期後點選查詢，並於時間表中點選您欲租借的教室與對應時間，紅色區間為已被預訂時間無法點選，點選後出現藍色區間為您選擇的教室時間，選擇完畢後點選預訂，便完成預訂。</p>
+          <p>若沒有預訂按鈕，請先登入會員！</p>
           <!--<p><a href="#" class="btn btn-primary btn-large">Learn more &raquo;</a></p>-->
         </div>
 
@@ -414,7 +420,9 @@
               <input class="span2" type="text" id="calendar_input" placeholder="2014-01-01">
               <span><img id="calendar_icon" src="./imgs/dhxcalendar_skyblue/calendar.gif" border="0"></span>
               <button type="submit" class="btn" id="searchRoom">查詢</button>
+              <?php if (($_COOKIE['userType'] == 'admin') || ($_COOKIE['userType'] == 'member')) {?>
               <button type="submit" class="btn" id="bookRoom">預訂</button>
+              <?php } ?>
             </form>
             <br>
             <table id="tfhover" class="table table-striped table-bordered" align="center">
