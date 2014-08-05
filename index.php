@@ -53,7 +53,7 @@
                 if(json["info"]=="success"){
                   document.cookie = "stat=success; " ; 
                   document.cookie = "user="+username+"; ";
-
+                  document.cookie = "userType="+json["userType"]+"; ";
                   window.location.reload(true);
                 }
                 else{
@@ -91,6 +91,7 @@
             document.cookie = "stat=;";
             document.cookie = "user=;";
             document.cookie = "point=;";
+            document.cookie = "userType=;";
             document.getElementById('userDiv').style.display='none';
             document.getElementById('loginDiv').style.display='';
             document.getElementById('liMember').style.display='none';
@@ -223,6 +224,7 @@
                 Td = Tr.insertCell(Tr.cells.length);
                 Td.innerHTML= json["data"][count]["createTime"]
                 Td = Tr.insertCell(Tr.cells.length);
+                Td = Tr.insertCell(Tr.cells.length);
               }   
             },
            error: function() {
@@ -338,12 +340,17 @@
               <li class="active" id="liHome"><a id="mHome" href="#home" onClick="showLayer(this,'home','liHome');">首頁</a></li>
               <li id="liBook"><a id="mBook" href="#book" onClick="showLayer(this,'book','liBook');">教室預訂</a></li>
               <li id="liContact"><a id="mContact" href="#contact" onClick="showLayer(this,'contact','liContact');">商品列表</a></li>
+              <?php if (($_COOKIE['userType'] == 'admin') || ($_COOKIE['userType'] == 'member')) {?>
               <li id="liMember" style="display:none" class="dropdown"><a id="mMember" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown" >會員中心<b class="caret"></b></a>
                 <ul class="dropdown-menu" role="menu" aria-labelledby="mMember">
                   <li role="presentation"><a id="a_Manage" role="menuitem" tabindex="-1" href="#" onClick="showLayer(this,'m_Manage','liMember');">訂單查詢</a></li>
-                  <li role="presentation"><a role="menuitem" tabindex="-1" href="#">會員管理2</a></li>
+                  <li role="presentation"><a role="menuitem" tabindex="-1" href="#">會員資料修改</a></li>
+                  <?php if ($_COOKIE['userType'] == 'admin') {?>
+                  <li role="presentation"><a id="p_add" role="menuitem" tabindex="-1" href="#" onClick="showLayer(this,'addPoint','liMember');">點數儲值</a></li>
+                  <?php } ?>
                 </ul>
               </li>
+              <?php } ?>
             </ul>
             <form class="navbar-form pull-right" >
               <div id="userDiv" style="display:none">
@@ -451,11 +458,11 @@
         </div>
       </div>
 
+      <?php if (($_COOKIE['userType'] == 'admin') || ($_COOKIE['userType'] == 'member')) {?>
       <div id="m_Manage" style="display:none">
         <div class="hero-unit">
           <h1>訂單查詢</h1>
           <p>This is a template for a simple marketing or informational website. It includes a large callout called the hero unit and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
-          <p><a href="#" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
         </div>
 
       <!-- Example row of columns -->
@@ -467,16 +474,21 @@
                   <td>日期</td>
                   <td>預訂教室</td>
                   <td>下訂時間</td>
+                  <td>訂單狀態</td>
                   <td>管理</td>
                 </tr>
             </table>
           </div>
         </div>
       </div>
+      <?php } ?>
 
-
+      <?php if ($_COOKIE['userType'] == 'admin') {?>
+      <div id="addPoint" style="display:none"><?php include_once('addPoint.php'); ?></div>
+      <?php } ?>
       <hr>
 
+      <?php if (($_COOKIE['userType'] != 'admin') && ($_COOKIE['userType'] != 'member')) {?>
         <!-- Modal -->
       <div class="modal hide fade " id="applyDia" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
         <div class="modal-dialog">
@@ -528,6 +540,7 @@
           </div>
         </div>
       </div>
+      <?php } ?>
 
       <footer>
         <p align="center">&copy; 2014 By megshao</p>

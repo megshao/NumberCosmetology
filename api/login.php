@@ -7,7 +7,7 @@
     $passwd = md5($passwd);
 
     $query_RecLogin = "SELECT * FROM `memberdata` WHERE `m_username`='".$username."'";
-    $RecLogin = mysql_query($query_RecLogin);
+    $RecLogin = mysql_query($query_RecLogin)or die(mysql_error());
     $row_RecLogin=mysql_fetch_assoc($RecLogin);
 
     if(empty($username)){
@@ -20,7 +20,7 @@
     }
 
     if($passwd == $row_RecLogin["m_passwd"]){
-        $output = array('data'=>true, 'info'=>'sucess', 'code'=>200);
+        $output = array('data'=>true, 'info'=>'success', 'code'=>200, 'userType' => $row_RecLogin["m_level"]);
         exit(json_encode($output));
     }
     else{
