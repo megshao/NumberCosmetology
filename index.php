@@ -230,8 +230,13 @@
                 Td = Tr.insertCell(Tr.cells.length);
                 Td.innerHTML= json["data"][count]["createTime"];
                 Td = Tr.insertCell(Tr.cells.length);
+                if(compareDate(json["data"][count]["date"]))
+                  Td.innerHTML = "已結束";
+                else
+                  Td.innerHTML = "已預訂";
                 Td = Tr.insertCell(Tr.cells.length);
-                Td.innerHTML="<a onClick=deleteBtn('"+getCookie("user")+"','"+json["data"][count]["date"]+"','"+json["data"][count]["rooms"]+"','"+Tr.id+"');><img src='img/delete.png' width='24' height='24'></a>";
+                if(!compareDate(json["data"][count]["date"]))
+                  Td.innerHTML="<a onClick=deleteBtn('"+getCookie("user")+"','"+json["data"][count]["date"]+"','"+json["data"][count]["rooms"]+"','"+Tr.id+"');><img src='img/delete.png' width='24' height='24'></a>";
               }   
             },
            error: function() {
@@ -274,7 +279,7 @@
       }
 
       function deleteBtn(iUser,iDate,iRooms,iTrID){
-        var userCheckDelete = confirm("確認刪除?");
+        var userCheckDelete = confirm("預訂時間三天內，如取消預訂將不會回補點數，確認刪除?");
         if(userCheckDelete)
         $.ajax({
           url: './api/deleteRooms.php?user='+iUser+'&date='+iDate+'&rooms='+iRooms,
@@ -496,7 +501,7 @@
       <div id="m_Manage" style="display:none">
         <div class="hero-unit">
           <h1>訂單查詢</h1>
-          <p>This is a template for a simple marketing or informational website. It includes a large callout called the hero unit and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
+          <p></p>
         </div>
 
       <!-- Example row of columns -->

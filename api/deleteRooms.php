@@ -14,12 +14,23 @@
             $query_delete = "DELETE FROM `bookRoom` WHERE `b_ID` = ".$row_Search['b_ID'];
             $Delete = mysql_query($query_delete)or die(mysql_error());
             if($Delete){
-                $output = array('stat'=>true);
                 $saveRooms = explode(';',$rooms);
-                $ch = curl_init();
-                curl_setopt($ch, CURLOPT_URL, "http://localhost/~Yu-Shao-Cheng/NumberCosmetology/api/pointManage.php?fun=add&user=".$user."&num=".sizeof($saveRooms));
-                curl_exec($ch);
-                curl_close($ch);
+                date_default_timezone_set('Asia/Taipei');
+                $saveDate = strtotime($date);
+                if($saveDate > strtotime("+3 days")){
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, "http://localhost/~Yu-Shao-Cheng/NumberCosmetology/api/pointManage.php?fun=add&user=".$user."&num=".sizeof($saveRooms));
+                    curl_exec($ch);
+                    curl_close($ch);
+                }
+                else{
+                    $ch = curl_init();
+                    curl_setopt($ch, CURLOPT_URL, "http://localhost/~Yu-Shao-Cheng/NumberCosmetology/api/pointManage.php?fun=get&user=".$user);
+                    curl_exec($ch);
+                    curl_close($ch);
+                    //$output = array('stat'=>true,'info'=>'三天內無回補點數');
+                    //exit(json_encode($output));
+                }
             }
             else{
                 $output = array('stat'=>false);
