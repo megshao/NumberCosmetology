@@ -222,18 +222,20 @@
               for(var count = 1;json["data"][count] != undefined ;count++){
                 var num = document.getElementById("searchBookedTable").rows.length;
                 var Tr = document.getElementById("searchBookedTable").insertRow(num);
+                Tr.id = 'tr'+count;
                 Td = Tr.insertCell(Tr.cells.length);
                 Td.innerHTML= json["data"][count]["date"];
                 Td = Tr.insertCell(Tr.cells.length);
-                Td.innerHTML= json["data"][count]["rooms"]
+                Td.innerHTML= json["data"][count]["rooms"];
                 Td = Tr.insertCell(Tr.cells.length);
-                Td.innerHTML= json["data"][count]["createTime"]
+                Td.innerHTML= json["data"][count]["createTime"];
                 Td = Tr.insertCell(Tr.cells.length);
                 Td = Tr.insertCell(Tr.cells.length);
+                Td.innerHTML="<a onClick=deleteBtn('"+getCookie("user")+"','"+json["data"][count]["date"]+"','"+json["data"][count]["rooms"]+"','"+Tr.id+"');><img src='img/delete.png' width='24' height='24'></a>";
               }   
             },
            error: function() {
-               alert("error");
+               alert("Manage error");
            }
           });
         });
@@ -269,6 +271,30 @@
       function doOnLoad() {
         myCalendar = new dhtmlXCalendarObject({input: "calendar_input", button: "calendar_icon"});
         myCalendar = new dhtmlXCalendarObject(["calendar_input"]);
+      }
+
+      function deleteBtn(iUser,iDate,iRooms,iTrID){
+        var userCheckDelete = confirm("確認刪除?");
+        if(userCheckDelete)
+        $.ajax({
+          url: './api/deleteRooms.php?user='+iUser+'&date='+iDate+'&rooms='+iRooms,
+          type: 'GET',
+          dataType: 'json',
+          success: function(json){
+            if(json["stat"] == true){
+              alert("刪除成功！");
+              document.getElementById(iTrID).style.display='none';
+              document.cookie = "point="+json["point"]+"; ";
+              document.getElementById("point").innerHTML=getCookie("point")+'點';
+            }
+            else
+              alert("刪除失敗！");
+          },
+          error: function(){
+            alert("error");
+          }
+        });
+        
       }
 
       function compareDate(saveDate){
@@ -418,7 +444,7 @@
           <div class="span12">
             <form class="navbar-form" style="text-align:center">
               <input class="span2" type="text" id="calendar_input" placeholder="2014-01-01">
-              <span><img id="calendar_icon" src="./imgs/dhxcalendar_skyblue/calendar.gif" border="0"></span>
+              <span><img id="calendar_icon" src="./img/dhxcalendar_skyblue/calendar.gif" border="0"></span>
               <button type="submit" class="btn" id="searchRoom">查詢</button>
               <?php if (($_COOKIE['userType'] == 'admin') || ($_COOKIE['userType'] == 'member')) {?>
               <button type="submit" class="btn" id="bookRoom">預訂</button>
