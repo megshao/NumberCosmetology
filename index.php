@@ -201,7 +201,7 @@
 
         $("#addPointBtn").click(function(event) {
           $.ajax({
-            url: './api/pointManage.php?fun=add&user='+$("#a_username").val()+'&num='+$("#numPoint").val(),
+            url: './api/pointManage.php?fun=add&user='+$("#a_username").val()+'&o_user='+getCookie("user")+'&num='+$("#numPoint").val()+'&type=2',
             type: 'GET',
             dataType: 'json',
             success: function(json){
@@ -241,6 +241,46 @@
             },
            error: function() {
                alert("Manage error");
+           }
+          });
+        });
+
+        $("#a_showPoint").click(function(event) {
+          $.ajax({
+           type: "GET",
+           url: "./api/pointEvent.php?fun=get&user="+getCookie("user"),
+            dataType : "json",
+           success: function(json){
+              for(var p_count = 1 ;json["data"][p_count] != undefined ;p_count++){
+                var num = document.getElementById("searchPointTable").rows.length;
+                var Tr = document.getElementById("searchPointTable").insertRow(num);
+                Tr.id = 'tr'+p_count;
+                Td = Tr.insertCell(Tr.cells.length);
+                Td.innerHTML= json["data"][p_count]["user"];
+                Td = Tr.insertCell(Tr.cells.length);
+                Td.innerHTML= json["data"][p_count]["operateBy"];
+                Td = Tr.insertCell(Tr.cells.length);
+                Td.innerHTML= json["data"][p_count]["value"]+"點";
+                Td = Tr.insertCell(Tr.cells.length);
+                switch(json["data"][p_count]["type"]){
+                  case '1':
+                    Td.innerHTML = "使用";
+                    break;
+                  case '2':
+                    Td.innerHTML = "儲值";
+                    break;
+                  case '3':
+                    Td.innerHTML = "回補";
+                    break;
+                }
+                Td = Tr.insertCell(Tr.cells.length);
+                Td.innerHTML= json["data"][p_count]["time"];
+                Td = Tr.insertCell(Tr.cells.length);
+                Td.innerHTML= json["data"][p_count]["remark"];
+              }   
+            },
+           error: function() {
+               alert("Point error");
            }
           });
         });
@@ -380,7 +420,7 @@
               <li id="liMember" style="display:none" class="dropdown"><a id="mMember" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown" >會員中心<b class="caret"></b></a>
                 <ul class="dropdown-menu" role="menu" aria-labelledby="mMember">
                   <li role="presentation"><a id="a_Manage" role="menuitem" tabindex="-1" href="#" onClick="showLayer(this,'m_Manage','liMember');">訂單查詢</a></li>
-                  <li role="presentation"><a role="menuitem" tabindex="-1" href="#">會員資料修改</a></li>
+                  <li role="presentation"><a id="a_showPoint" role="menuitem" tabindex="-1" href="#" onClick="showLayer(this,'showPoint','liMember');">點數記錄</a></li>
                   <?php if ($_COOKIE['userType'] == 'admin') {?>
                   <li role="presentation"><a id="p_add" role="menuitem" tabindex="-1" href="#" onClick="showLayer(this,'addPoint','liMember');">點數儲值</a></li>
                   <?php } ?>
@@ -520,11 +560,14 @@
           </div>
         </div>
       </div>
+
+      <div id="showPoint" style="display:none"><?php include_once('showPointEvent.php'); ?></div>      
       <?php } ?>
 
       <?php if ($_COOKIE['userType'] == 'admin') {?>
       <div id="addPoint" style="display:none"><?php include_once('addPoint.php'); ?></div>
       <?php } ?>
+
       <hr>
 
       <?php if (($_COOKIE['userType'] != 'admin') && ($_COOKIE['userType'] != 'member')) {?>

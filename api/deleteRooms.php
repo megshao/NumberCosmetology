@@ -19,7 +19,7 @@
                 $saveDate = strtotime($date);
                 if($saveDate > strtotime("+3 days")){
                     $ch = curl_init();
-                    curl_setopt($ch, CURLOPT_URL, "http://localhost/~Yu-Shao-Cheng/NumberCosmetology/api/pointManage.php?fun=add&user=".$user."&num=".sizeof($saveRooms));
+                    curl_setopt($ch, CURLOPT_URL, "http://localhost/~Yu-Shao-Cheng/NumberCosmetology/api/pointManage.php?fun=add&user=".$user."&o_user=".$user."&num=".sizeof($saveRooms)."&type=3");
                     curl_exec($ch);
                     curl_close($ch);
                 }
@@ -28,8 +28,6 @@
                     curl_setopt($ch, CURLOPT_URL, "http://localhost/~Yu-Shao-Cheng/NumberCosmetology/api/pointManage.php?fun=get&user=".$user);
                     curl_exec($ch);
                     curl_close($ch);
-                    //$output = array('stat'=>true,'info'=>'三天內無回補點數');
-                    //exit(json_encode($output));
                 }
             }
             else{

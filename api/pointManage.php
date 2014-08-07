@@ -16,12 +16,16 @@
             exit(json_encode($output));
             break;
         case 'add':
+            $o_user = $_GET['o_user'] ? $_GET['o_user'] : '';
             $addNum = $_GET['num'] ? $_GET['num'] : '';
+            $type = $_GET['type'] ? $_GET['type'] : '';
             $pointNum = $row_Search['m_point'] + $addNum;
             $query_Add = "UPDATE `memberdata` SET `m_point` = ".$pointNum." WHERE `m_username` ='".$user."'";
             $Add = mysql_query($query_Add) or die(mysql_error());
-            if($Add)
+            if($Add){
                 $output=array('stat' => true, 'point' => $pointNum);
+                file_get_contents("http://localhost/~Yu-Shao-Cheng/NumberCosmetology/api/pointEvent.php?fun=add&user=".$user."&o_user=".$o_user."&num=".$addNum."&type=".$type);
+            }
             else
                 $output=array('stat' => false);
             exit(json_encode($output));
@@ -32,8 +36,10 @@
             if($pointNum >= 0){
                 $query_Use = "UPDATE `memberdata` SET `m_point` = ".$pointNum." WHERE `m_username` ='".$user."'";
                 $Use = mysql_query($query_Use) or die(mysql_error());
-                if($Use)
+                if($Use){
                     $output=array('stat' => true, 'point' => $pointNum);
+                    file_get_contents("http://localhost/~Yu-Shao-Cheng/NumberCosmetology/api/pointEvent.php?fun=use&user=".$user."&o_user=".$user."&num=".$useNum);
+                }
                 else
                     $output=array('stat' => false);
                 exit(json_encode($output));
