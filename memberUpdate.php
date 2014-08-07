@@ -42,7 +42,7 @@
                 <input name="up_phone" type="text" class="form-control" id="up_phone"></p>
                 <p><strong>住　　址</strong>：
                 <input name="up_address" type="text" class="form-control" id="up_address" size="40"></p>
-                <p> <font color="#FF0000">*</font> 表示為必填的欄位</p>
+                
                 <button type="button" class="btn btn-primary" id="sendUpdate">送出修改</button>
           </div>
         </div>

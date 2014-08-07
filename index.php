@@ -61,7 +61,7 @@
                         document.cookie = "point="+json["point"]+"; ";
                     },
                     error: function(){
-                      alert("error");
+                      alert("point show error");
                     }
                   });
             return false;
@@ -259,7 +259,6 @@
                 dataType: 'json',
                 success: function(json){
                   alert(json['info']);
-                  //document.getElementById("logout").click();
                 },
                 error: function(){
                   alert('error');
@@ -268,7 +267,6 @@
             }
             
           }
-            //$('#applyDia').modal('hide');
             return false;
           });
 
@@ -498,7 +496,7 @@
             <ul class="nav">
               <li class="active" id="liHome"><a id="mHome" href="#home" onClick="showLayer(this,'home','liHome');">首頁</a></li>
               <li id="liBook"><a id="mBook" href="#book" onClick="showLayer(this,'book','liBook');">教室預訂</a></li>
-              <li id="liContact"><a id="mContact" href="#contact" onClick="showLayer(this,'contact','liContact');">商品列表</a></li>
+              <li id="liContact"><a id="mContact" href="#contact" onClick="showLayer(this,'shopList','liContact');">商品列表</a></li>
               <?php if (($_COOKIE['userType'] == 'admin') || ($_COOKIE['userType'] == 'member')) {?>
               <li id="liMember" style="display:none" class="dropdown"><a id="mMember" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown" >會員中心<b class="caret"></b></a>
                 <ul class="dropdown-menu" role="menu" aria-labelledby="mMember">
@@ -608,9 +606,9 @@
         </div>
       </div>
 
-      <div id="contact" style="display:none">
+      <div id="shopList" style="display:none">
         <div class="hero-unit">
-          <h1>CONTACT</h1>
+          <h1>商品列表</h1>
           <p>This is a template for a simple marketing or informational website. It includes a large callout called the hero unit and three supporting pieces of content. Use it as a starting point to create something more unique.</p>
           <p><a href="#" class="btn btn-primary btn-large">Learn more &raquo;</a></p>
         </div>
