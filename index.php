@@ -49,7 +49,7 @@
                 }
               },
               error: function() {
-                 alert("error");
+                 alert("login error");
               }
             });
             $.ajax({
@@ -196,6 +196,79 @@
             });
           };
             $('#applyDia').modal('hide');
+            return false;
+          });
+
+        $("#sendUpdate").click(function(event) {
+          var userCheck = confirm("確定送出修改?");
+          if(userCheck){
+            if(document.getElementById('up_oldpasswd').value != ''){
+              $.ajax({
+                url: "./api/login.php?username="+getCookie("user")+"&passwd="+document.getElementById('up_oldpasswd').value,
+                type: 'GET',
+                dataType: 'json',
+                success: function(json){
+                  if(json["data"]){
+                    if(document.getElementById('up_newpasswd').value == document.getElementById('up_newpasswdrecheck').value){
+                    var sex ='';
+                    if(document.getElementById('up_sex_f').checked)
+                      sex = '女';
+                    if(document.getElementById('up_sex_m').checked)
+                      sex = '男';        
+                    $.ajax({
+                      url: './api/updateMember.php?username='+getCookie("user")+'&passwd='+document.getElementById('up_newpasswd').value
+                            +'&name='+document.getElementById('up_name').value+'&sex='+sex+'&birthday='+document.getElementById('up_birthday').value
+                            +'&email='+document.getElementById('up_email').value+'&phone='+document.getElementById('up_phone').value+'&address='+document.getElementById('up_address').value,
+                      type: 'GET',
+                      dataType: 'json',
+                      success: function(json){
+                        alert(json['info']);
+                        alert("修改密碼需重新登入！");
+                        document.getElementById("logout").click();
+                      },
+                      error: function(){
+                        alert('error');
+                      }
+                    });
+                  }
+                  else{
+                    alert("確認新密碼錯誤");
+                  }
+                }
+                  else{
+                    alert("密碼錯誤");
+                  }
+                },
+                error: function(){
+                  alert("check error");
+                }
+              });
+              
+            }
+            else{
+              var sex ='';
+              if(document.getElementById('up_sex_f').checked)
+                sex = '女';
+              if(document.getElementById('up_sex_m').checked)
+                sex = '男';        
+              $.ajax({
+                url: './api/updateMember.php?username='+getCookie("user")+'&passwd='
+                      +'&name='+document.getElementById('up_name').value+'&sex='+sex+'&birthday='+document.getElementById('up_birthday').value
+                      +'&email='+document.getElementById('up_email').value+'&phone='+document.getElementById('up_phone').value+'&address='+document.getElementById('up_address').value,
+                type: 'GET',
+                dataType: 'json',
+                success: function(json){
+                  alert(json['info']);
+                  //document.getElementById("logout").click();
+                },
+                error: function(){
+                  alert('error');
+                }
+              });
+            }
+            
+          }
+            //$('#applyDia').modal('hide');
             return false;
           });
 
@@ -594,38 +667,38 @@
             </div>
             <div class="modal-body">
                 <p><strong>使用帳號</strong>：
-                <input name="m_username" type="text" class="normalinput" id="m_username">
+                <input name="m_username" type="text" class="form-control" id="m_username">
                 <font color="#FF0000">*</font><br>
                 <span class="smalltext">請填入5~12個字元以內的小寫英文字母、數字、以及_ 符號。</span></p>
                 <p><strong>使用密碼</strong>：
-                <input name="m_passwd" type="password" class="normalinput" id="m_passwd">
+                <input name="m_passwd" type="password" class="form-control" id="m_passwd">
                 <font color="#FF0000">*</font><br>
                 <span class="smalltext">請填入5~10個字元以內的英文字母、數字、以及各種符號組合，</span></p>
                 <p><strong>確認密碼</strong>：
-                <input name="m_passwdrecheck" type="password" class="normalinput" id="m_passwdrecheck">
+                <input name="m_passwdrecheck" type="password" class="form-control" id="m_passwdrecheck">
                 <font color="#FF0000">*</font> <br>
                 <span class="smalltext">再輸入一次密碼</span></p>
                 <hr size="1" />
                 <p class="heading">個人資料</p>
                 <p><strong>真實姓名</strong>：
-                <input name="m_name" type="text" class="normalinput" id="m_name">
+                <input name="m_name" type="text" class="form-control" id="m_name">
                 <font color="#FF0000">*</font> </p>
                 <p><strong>性　　別</strong>：
                 <input name="m_sex" type="radio" value="女" id="m_sex" checked>女
                 <input name="m_sex" type="radio" value="男" >男
                 <font color="#FF0000">*</font></p>
                 <p><strong>生　　日</strong>：
-                <input name="m_birthday" type="text" class="normalinput" id="m_birthday">
+                <input name="m_birthday" type="text" class="form-control" id="m_birthday">
                 <font color="#FF0000">*</font> <br>
                 <span class="smalltext">為西元格式(YYYY-MM-DD)。</span></p>
                 <p><strong>電子郵件</strong>：
-                <input name="m_email" type="text" class="normalinput" id="m_email">
+                <input name="m_email" type="text" class="form-control" id="m_email">
                 <font color="#FF0000">*</font> </p>
                 <p class="smalltext">請確定此電子郵件為可使用狀態，以方便未來系統使用，如補寄會員密碼信。</p>
                 <p><strong>電　　話</strong>：
-                <input name="m_phone" type="text" class="normalinput" id="m_phone"></p>
+                <input name="m_phone" type="text" class="form-control" id="m_phone"></p>
                 <p><strong>住　　址</strong>：
-                <input name="m_address" type="text" class="normalinput" id="m_address" size="40"></p>
+                <input name="m_address" type="text" class="form-control" id="m_address" size="40"></p>
                 <p> <font color="#FF0000">*</font> 表示為必填的欄位</p>
             </div>
             <div class="modal-footer">
