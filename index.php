@@ -214,6 +214,7 @@
         });
 
         $("#a_Manage").click(function(event) {
+          tableClean("searchBookedTable");
           $.ajax({
            type: "GET",
            url: "./api/getBooked.php?fun=user&username="+getCookie("user"),
@@ -246,6 +247,7 @@
         });
 
         $("#a_showPoint").click(function(event) {
+          tableClean("searchPointTable");
           $.ajax({
            type: "GET",
            url: "./api/pointEvent.php?fun=get&user="+getCookie("user"),
@@ -316,6 +318,14 @@
       function doOnLoad() {
         myCalendar = new dhtmlXCalendarObject({input: "calendar_input", button: "calendar_icon"});
         myCalendar = new dhtmlXCalendarObject(["calendar_input"]);
+      }
+
+      function tableClean(inputTable){
+        var rNum = document.getElementById(inputTable).rows.length;
+        while(rNum > 1){
+          document.getElementById(inputTable).deleteRow(-1);
+          rNum--;
+        }
       }
 
       function deleteBtn(iUser,iDate,iRooms,iTrID){
@@ -421,6 +431,7 @@
                 <ul class="dropdown-menu" role="menu" aria-labelledby="mMember">
                   <li role="presentation"><a id="a_Manage" role="menuitem" tabindex="-1" href="#" onClick="showLayer(this,'m_Manage','liMember');">訂單查詢</a></li>
                   <li role="presentation"><a id="a_showPoint" role="menuitem" tabindex="-1" href="#" onClick="showLayer(this,'showPoint','liMember');">點數記錄</a></li>
+                  <li role="presentation"><a id="a_memberUpdate" role="menuitem" tabindex="-1" href="#" onClick="showLayer(this,'memberUpdate','liMember');">會員資料修改</a></li>
                   <?php if ($_COOKIE['userType'] == 'admin') {?>
                   <li role="presentation"><a id="p_add" role="menuitem" tabindex="-1" href="#" onClick="showLayer(this,'addPoint','liMember');">點數儲值</a></li>
                   <?php } ?>
@@ -561,7 +572,9 @@
         </div>
       </div>
 
-      <div id="showPoint" style="display:none"><?php include_once('showPointEvent.php'); ?></div>      
+      <div id="showPoint" style="display:none"><?php include_once('showPointEvent.php'); ?></div>  
+
+      <div id="memberUpdate" style="display:none"><?php include_once('memberUpdate.php'); ?></div>    
       <?php } ?>
 
       <?php if ($_COOKIE['userType'] == 'admin') {?>
