@@ -2,11 +2,11 @@
     require_once("../connMysql.php");
     $output = array();
     $saveRooms = '';
-    $fun = $_GET['fun'] ? $_GET['fun'] : '';
+    $fun = $_POST['fun'] ? $_POST['fun'] : '';
     if(!empty($fun)){
         switch ($fun) {
             case 'date':
-                $date = $_GET['date'] ? $_GET['date'] : '';
+                $date = $_POST['date'] ? $_POST['date'] : '';
                 if(!empty($date)){
                     $query_search = "SELECT * FROM bookRoom WHERE b_Date='".$date."'";
                     $Search = mysql_query($query_search)or die(mysql_error());
@@ -30,7 +30,7 @@
                 }
                 break;
             case 'user':
-                $user = $_GET['username'] ? $_GET['username'] : '';
+                $user = $_POST['username'] ? $_POST['username'] : '';
                 if (!empty($user)) {
                     $query_search = "SELECT * FROM `bookRoom` WHERE `b_UserID` = (SELECT m_id FROM `memberdata` WHERE m_username = '".$user."') ORDER BY b_Date";
                     $Search = mysql_query($query_search) or die(mysql_error());

@@ -2,15 +2,15 @@
     require_once("../connMysql.php");
 
     $output = array();
-    $username = $_GET['username'] ? $_GET['username'] : '';
-    $passwd = $_GET['passwd'] ? $_GET['passwd'] : '';
+    $username = $_POST['username'] ? $_POST['username'] : '';
+    $passwd = $_POST['passwd'] ? $_POST['passwd'] : '';
     $passwdmd5 = md5($passwd);
-    $name = $_GET['name'] ? $_GET['name'] : '';
-    $sex = $_GET['sex'] ? $_GET['sex'] : '';
-    $birthday = $_GET['birthday'] ? $_GET['birthday'] : '';
-    $email = $_GET['email'] ? $_GET['email'] : '';
-    $phone = $_GET['phone'] ? $_GET['phone'] : '';
-    $address = $_GET['address'] ? $_GET['address'] : '';
+    $name = $_POST['name'] ? $_POST['name'] : '';
+    $sex = $_POST['sex'] ? $_POST['sex'] : '';
+    $birthday = $_POST['birthday'] ? $_POST['birthday'] : '';
+    $email = $_POST['email'] ? $_POST['email'] : '';
+    $phone = $_POST['phone'] ? $_POST['phone'] : '';
+    $address = $_POST['address'] ? $_POST['address'] : '';
 
     $query_RecLogin = "SELECT * FROM `memberdata` WHERE `m_username`='".$username."'";
     $RecLogin = mysql_query($query_RecLogin)or die(mysql_error());

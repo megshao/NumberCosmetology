@@ -2,9 +2,9 @@
     require_once("../connMysql.php");
     $output = array();
     $saveRooms = '';
-    $date = $_GET['date'] ? $_GET['date'] : '';
-    $rooms = $_GET['rooms'] ? $_GET['rooms'] : '';
-    $user = $_GET['user'] ? $_GET['user'] : '';
+    $date = $_POST['date'] ? $_POST['date'] : '';
+    $rooms = $_POST['rooms'] ? $_POST['rooms'] : '';
+    $user = $_POST['user'] ? $_POST['user'] : '';
 
     if(!empty($date) && !empty($rooms) && !empty($user)){
         $query_search = "SELECT m_id FROM memberdata WHERE m_username='".$user."'";

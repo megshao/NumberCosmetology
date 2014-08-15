@@ -2,11 +2,12 @@
     require_once("../connMysql.php");
 
     $output = array();
-    $username = $_GET['username'] ? $_GET['username'] : '';
-    $passwd = $_GET['passwd'] ? $_GET['passwd'] : '';
+    $username = $_POST['username'] ? $_POST['username'] : '';
+    $passwd = $_POST['passwd'] ? $_POST['passwd'] : '';
     $passwd = md5($passwd);
 
     $query_RecLogin = "SELECT * FROM `memberdata` WHERE `m_username`='".$username."'";
+    //$query_RecLogin = addslashes($query_RecLogin);
     $RecLogin = mysql_query($query_RecLogin)or die(mysql_error());
     $row_RecLogin=mysql_fetch_assoc($RecLogin);
 

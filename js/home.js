@@ -30,9 +30,10 @@ var sBookItem;
             });
             $.ajax({
                     async: false,
-                    url: './api/pointManage.php?fun=get&user='+username,
-                    type: 'GET',
+                    url: './api/pointManage.php',
+                    type: 'POST',
                     dataType: 'json',
+                    data: {fun:'get',user:username},
                     success: function(json){
                       if(json["stat"] == true)
                         document.cookie = "point="+json["point"]+"; ";
@@ -69,9 +70,10 @@ var sBookItem;
           if(date != ""){
             sBookItem = new bookItem(date,iUser);
             $.ajax({
-              url: './api/getBooked.php?fun=date&date='+date,
-              type: 'GET',
+              url: './api/getBooked.php',
+              type: 'POST',
               dataType: 'json',
+              data: {fun:'date',date:date},
               success: function(json){
                 for(var i = 1; i < 8 ; i++){
                   for(var j = 1; j < 11 ; j++){
@@ -111,16 +113,18 @@ var sBookItem;
           if(userCheck)
           if(sBookItem.user != ""){
               $.ajax({//送出訂單前確認點數足夠
-                      url: './api/pointManage.php?fun=use&user='+getCookie("user")+'&num='+sBookItem.numOfItem,
-                      type: 'GET',
+                      url: './api/pointManage.php',
+                      type: 'POST',
                       dataType: 'json',
+                      data: {fun:'use',user:sBookItem.user,num:sBookItem.numOfItem},
                      success: function(json){
                        if(json["stat"] == true){
                           document.cookie = "point="+json["point"]+"; ";
                           $.ajax({
-                            url: './api/bookRooms.php?date='+sBookItem.date+'&rooms='+sBookItem.rooms+'&user='+sBookItem.user,
-                            type: 'GET',
+                            url: './api/bookRooms.php',
+                            type: 'POST',
                             dataType: 'json',
+                            data:{date:sBookItem.date,rooms:sBookItem.rooms,user:sBookItem.user},
                             success: function(json){
                             if(json["stat"]==true){
                               document.getElementById("searchRoom").click();
@@ -136,7 +140,7 @@ var sBookItem;
                           });
                         }
                        else 
-                        alert(json["info"]);
+                        alert(json["info"]+"QQ");
                      },
                       error: function(){
                         alert("error");
@@ -157,11 +161,11 @@ var sBookItem;
             else
               sex = '男';        
             $.ajax({
-              url: './api/addMember.php?username='+document.getElementById('m_username').value+'&passwd='+document.getElementById('m_passwd').value
-                    +'&name='+document.getElementById('m_name').value+'&sex='+sex+'&birthday='+document.getElementById('m_birthday').value
-                    +'&email='+document.getElementById('m_email').value+'&phone='+document.getElementById('m_phone').value+'&address='+document.getElementById('m_address').value,
-              type: 'GET',
+              url: './api/addMember.php',
+              type: 'POST',
               dataType: 'json',
+              data: {username:document.getElementById('m_username').value,passwd:document.getElementById('m_passwd').value,name:document.getElementById('m_name').value,
+                      sex:sex,birthday:document.getElementById('m_birthday').value,email:document.getElementById('m_email').value,phone:document.getElementById('m_phone').value,address:document.getElementById('m_address').value},
               success: function(json){
                 alert(json['info']);
                 if(json['code'] == 200)
@@ -181,9 +185,10 @@ var sBookItem;
           if(userCheck){
             if(document.getElementById('up_oldpasswd').value != ''){
               $.ajax({
-                url: "./api/login.php?username="+getCookie("user")+"&passwd="+document.getElementById('up_oldpasswd').value,
-                type: 'GET',
+                url: "./api/login.php",
+                type: 'POST',
                 dataType: 'json',
+                data: {username:getCookie("user"),passwd:document.getElementById('up_oldpasswd').value},
                 success: function(json){
                   if(json["data"]){
                     if(document.getElementById('up_newpasswd').value == document.getElementById('up_newpasswdrecheck').value){
@@ -193,11 +198,11 @@ var sBookItem;
                     if(document.getElementById('up_sex_m').checked)
                       sex = '男';        
                     $.ajax({
-                      url: './api/updateMember.php?username='+getCookie("user")+'&passwd='+document.getElementById('up_newpasswd').value
-                            +'&name='+document.getElementById('up_name').value+'&sex='+sex+'&birthday='+document.getElementById('up_birthday').value
-                            +'&email='+document.getElementById('up_email').value+'&phone='+document.getElementById('up_phone').value+'&address='+document.getElementById('up_address').value,
-                      type: 'GET',
+                      url: './api/updateMember.php',
+                      type: 'POST',
                       dataType: 'json',
+                      data: {username:getCookie("user"),passwd:document.getElementById('up_newpasswd').value,name:document.getElementById('up_name').value,
+                      sex:sex,birthday:document.getElementById('up_birthday').value,email:document.getElementById('up_email').value,phone:document.getElementById('up_phone').value,address:document.getElementById('up_address').value},
                       success: function(json){
                         alert(json['info']);
                         alert("修改密碼需重新登入！");
@@ -229,11 +234,11 @@ var sBookItem;
               if(document.getElementById('up_sex_m').checked)
                 sex = '男';        
               $.ajax({
-                url: './api/updateMember.php?username='+getCookie("user")+'&passwd='
-                      +'&name='+document.getElementById('up_name').value+'&sex='+sex+'&birthday='+document.getElementById('up_birthday').value
-                      +'&email='+document.getElementById('up_email').value+'&phone='+document.getElementById('up_phone').value+'&address='+document.getElementById('up_address').value,
-                type: 'GET',
+                url: './api/updateMember.php',
+                type: 'POST',
                 dataType: 'json',
+                data: {username:getCookie("user"),passwd:'',name:document.getElementById('up_name').value,
+                      sex:sex,birthday:document.getElementById('up_birthday').value,email:document.getElementById('up_email').value,phone:document.getElementById('up_phone').value,address:document.getElementById('up_address').value},
                 success: function(json){
                   alert(json['info']);
                 },
@@ -249,9 +254,10 @@ var sBookItem;
 
         $("#addPointBtn").click(function(event) {
           $.ajax({
-            url: './api/pointManage.php?fun=add&user='+$("#a_username").val()+'&o_user='+getCookie("user")+'&num='+$("#numPoint").val()+'&type=2',
-            type: 'GET',
+            url: './api/pointManage.php',
+            type: 'POST',
             dataType: 'json',
+            data: {fun:'add',user:$('#a_username').val(),o_user:getCookie("user"),num:$('#numPoint').val(),type:2},
             success: function(json){
               alert("帳號:"+$("#a_username").val()+"現在有"+json["point"]+"點");
             },
@@ -264,9 +270,10 @@ var sBookItem;
         $("#a_Manage").click(function(event) {
           tableClean("searchBookedTable");
           $.ajax({
-           type: "GET",
-           url: "./api/getBooked.php?fun=user&username="+getCookie("user"),
+           type: "POST",
+           url: "./api/getBooked.php",
             dataType : "json",
+            data:{fun:'user',username:getCookie("user")},
            success: function(json){
               for(var count = 1;json["data"][count] != undefined ;count++){
                 var num = document.getElementById("searchBookedTable").rows.length;

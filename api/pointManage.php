@@ -1,10 +1,10 @@
 <?php
     require_once("../connMysql.php");
     $output = array();
-    $fun = $_GET['fun'] ? $_GET['fun'] : '';
-    $user = $_GET['user'] ? $_GET['user'] : '';
+    $fun = $_POST['fun'] ? $_POST['fun'] : '';
+    $user = $_POST['user'] ? $_POST['user'] : '';
     if(empty($fun) || empty($user)){
-        $output = array('stat' => false);
+        $output = array('stat' => false,'info' => $user);
         exit(json_encode($output));
     }
     $query_Search = "SELECT `m_point` FROM `memberdata` WHERE `m_username`='".$user."'";
@@ -12,13 +12,13 @@
     $row_Search=mysql_fetch_assoc($Search);
     switch ($fun) {
         case 'get':
-            $output = array('stat' => true, 'point' => $row_Search['m_point']);
+            $output = array('stat' => true, 'point' => $row_Search['m_point']+0);
             exit(json_encode($output));
             break;
         case 'add':
-            $o_user = $_GET['o_user'] ? $_GET['o_user'] : '';
-            $addNum = $_GET['num'] ? $_GET['num'] : '';
-            $type = $_GET['type'] ? $_GET['type'] : '';
+            $o_user = $_POST['o_user'] ? $_POST['o_user'] : '';
+            $addNum = $_POST['num'] ? $_POST['num'] : '';
+            $type = $_POST['type'] ? $_POST['type'] : '';
             $pointNum = $row_Search['m_point'] + $addNum;
             $query_Add = "UPDATE `memberdata` SET `m_point` = ".$pointNum." WHERE `m_username` ='".$user."'";
             $Add = mysql_query($query_Add) or die(mysql_error());
@@ -31,7 +31,7 @@
             exit(json_encode($output));
             break;    
         case 'use':
-            $useNum = $_GET['num'] ? $_GET['num'] : '';
+            $useNum = $_POST['num'] ? $_POST['num'] : '';
             $pointNum = $row_Search['m_point'] - $useNum;
             if($pointNum >= 0){
                 $query_Use = "UPDATE `memberdata` SET `m_point` = ".$pointNum." WHERE `m_username` ='".$user."'";
@@ -41,7 +41,7 @@
                     file_get_contents("http://localhost/~Yu-Shao-Cheng/NumberCosmetology/api/pointEvent.php?fun=use&user=".$user."&o_user=".$user."&num=".$useNum);
                 }
                 else
-                    $output=array('stat' => false);
+                    $output=array('stat' => false, 'info' => 'Update失敗！');
                 exit(json_encode($output));
             }
             else{

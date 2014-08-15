@@ -59,7 +59,7 @@
             if($Use)
                 $output=array('stat' => true);
             else
-                $output=array('stat' => false);
+                $output=array('stat' => false,'info' => '插入資料失敗');
             exit(json_encode($output));
             break;
         default:
