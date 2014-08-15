@@ -6,9 +6,11 @@ var sBookItem;
             var username=$("#l_username").val();
             var password=$("#password").val();
             $.ajax({
-              type: "GET",
+              async: false,
+              type: "POST",
               url: "./api/login.php?username="+username+"&passwd="+password,
               dataType : "json",
+              data: {username:username,passwd:password},
               success: function(json){    
                 if(json["info"]=="success"){
                   document.cookie = "stat=success; " ; 
@@ -27,6 +29,7 @@ var sBookItem;
               }
             });
             $.ajax({
+                    async: false,
                     url: './api/pointManage.php?fun=get&user='+username,
                     type: 'GET',
                     dataType: 'json',
@@ -34,7 +37,7 @@ var sBookItem;
                       if(json["stat"] == true)
                         document.cookie = "point="+json["point"]+"; ";
                     },
-                    error: function(){
+                    error: function(error){
                       alert("point show error");
                     }
                   });
