@@ -67,7 +67,7 @@ var sBookItem;
         $("#searchRoom").click(function(event) {
           var date = $("#calendar_input").val();
           iUser = getCookie("user");
-          if(date != ""){
+          if(checkinput('date',date)){
             sBookItem = new bookItem(date,iUser);
             $.ajax({
               url: './api/getBooked.php',
@@ -101,7 +101,7 @@ var sBookItem;
             });
           }
           else{
-            alert("請輸入日期！");
+            alert("請輸入正確日期！");
           }
           return false;
         });
@@ -460,5 +460,21 @@ var sBookItem;
             }
             };
           }
+        }
+      }
+
+      function checkinput(dataType,data){
+        switch(dataType){
+          case 'date':
+            var tempDate = data.split("-");
+            if(tempDate.length!=3)
+              return false;
+            else{
+              var checkDate = new Date(parseInt(tempDate[0]),parseInt(tempDate[1]),parseInt(tempDate[2]));
+              if(checkDate.getFullYear()!=tempDate[0] || checkDate.getMonth()!=tempDate[1] || checkDate.getDate()!=tempDate[2])
+                return false;
+            }
+            return true;
+            break;
         }
       }
