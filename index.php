@@ -41,7 +41,7 @@
             <ul class="nav">
               <li class="active" id="liHome"><a id="mHome" href="#home" onClick="showLayer(this,'home','liHome');">首頁</a></li>
               <li id="liBook"><a id="mBook" href="#book" onClick="showLayer(this,'book','liBook');">教室預訂</a></li>
-              <li id="liContact"><a id="mContact" href="#contact" onClick="showLayer(this,'shopList','liContact');">商品列表</a></li>
+              <!--<li id="liContact"><a id="mContact" href="#contact" onClick="showLayer(this,'shopList','liContact');">商品列表</a></li>-->
               <?php if (($_COOKIE['userType'] == 'admin') || ($_COOKIE['userType'] == 'member')) {?>
               <li id="liMember" style="display:none" class="dropdown"><a id="mMember" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown" >會員中心<b class="caret"></b></a>
                 <ul class="dropdown-menu" role="menu" aria-labelledby="mMember">
