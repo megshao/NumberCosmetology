@@ -3,15 +3,22 @@
 
     $output = array();
     $username = $_POST['username'] ? $_POST['username'] : '';
+    $username = addslashes($username);
     $passwd = $_POST['passwd'] ? $_POST['passwd'] : '';
+    $passwd = addslashes($passwd);
     $passwdmd5 = md5($passwd);
     $name = $_POST['name'] ? $_POST['name'] : '';
+    $name = addslashes($name);
     $sex = $_POST['sex'] ? $_POST['sex'] : '';
+    $sex = addslashes($sex);
     $birthday = $_POST['birthday'] ? $_POST['birthday'] : '';
+    $birthday = addslashes($birthday);
     $email = $_POST['email'] ? $_POST['email'] : '';
+    $email = addslashes($email);
     $phone = $_POST['phone'] ? $_POST['phone'] : '';
+    $phone = addslashes($phone);
     $address = $_POST['address'] ? $_POST['address'] : '';
-
+    $address = addslashes($address);
     $query_RecLogin = "SELECT * FROM `memberdata` WHERE `m_username`='".$username."'";
     $RecLogin = mysql_query($query_RecLogin)or die(mysql_error());
     $row_RecLogin=mysql_fetch_assoc($RecLogin);

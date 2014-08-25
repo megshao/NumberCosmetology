@@ -3,6 +3,7 @@
     $output = array();
     $fun = $_GET['fun'] ? $_GET['fun'] : '';
     $user = $_GET['user'] ? $_GET['user'] : '';
+    $user = addslashes($user);
     if(empty($fun) || empty($user)){
         $output = array('stat' => false);
         exit(json_encode($output));
@@ -31,13 +32,17 @@
             break;
         case 'add':
             $operateUser = $_GET['o_user'] ? $_GET['o_user'] : '';
+            $operateUser = addslashes($operateUser);
             $num = $_GET['num'] ? $_GET['num'] :'';
+            $num = addslashes($num);
             $remark='';
             $addtype = $_GET['type'] ? $_GET['type'] :'';
+            $addtype = addslashes($addtype);
             $query_oSearch = "SELECT `m_ID`,`m_name` FROM `memberdata` WHERE `m_username`='".$operateUser."'";
             $oSearch = mysql_query($query_oSearch)or die(mysql_error());
             $row_oSearch=mysql_fetch_assoc($oSearch);
             $operateUserID = $row_oSearch['m_ID'];
+            $operateUserID = addslashes($operateUserID);
             $query_Use = "INSERT INTO `pointOperation` (`p_userID`, `changeValue`, `p_operateBy`, `eventTypeID`, `remark`) VALUES ('".$userID."', '".$num."', '".$operateUserID."', '".$addtype."', '".$remark."')";
             $Use = mysql_query($query_Use) or die(mysql_error());
             if($Use)
@@ -48,12 +53,15 @@
             break;    
         case 'use':
             $operateUser = $_GET['o_user'] ? $_GET['o_user'] : '';
+            $operateUser = addslashes($operateUser);
             $num = $_GET['num'] ? $_GET['num'] :'';
+            $num = addslashes($num);
             $remark='';
             $query_oSearch = "SELECT `m_ID`,`m_name` FROM `memberdata` WHERE `m_username`='".$operateUser."'";
             $oSearch = mysql_query($query_oSearch)or die(mysql_error());
             $row_oSearch=mysql_fetch_assoc($oSearch);
             $operateUserID = $row_oSearch['m_ID'];
+            $operateUserID = addslashes($operateUserID);
             $query_Use = "INSERT INTO `pointOperation` (`p_userID`, `changeValue`, `p_operateBy`, `eventTypeID`, `remark`) VALUES ('".$userID."', '".$num."', '".$operateUserID."', '1', '".$remark."')";
             $Use = mysql_query($query_Use) or die(mysql_error());
             if($Use)

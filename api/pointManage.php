@@ -3,6 +3,7 @@
     $output = array();
     $fun = $_POST['fun'] ? $_POST['fun'] : '';
     $user = $_POST['user'] ? $_POST['user'] : '';
+    $user = addslashes($user);
     if(empty($fun) || empty($user)){
         $output = array('stat' => false,'info' => $user);
         exit(json_encode($output));
@@ -17,8 +18,10 @@
             break;
         case 'add':
             $o_user = $_POST['o_user'] ? $_POST['o_user'] : '';
+            $o_user = addslashes($o_user);
             $addNum = $_POST['num'] ? $_POST['num'] : '';
             $type = $_POST['type'] ? $_POST['type'] : '';
+            $type = addslashes($type);
             $pointNum = $row_Search['m_point'] + $addNum;
             $query_Add = "UPDATE `memberdata` SET `m_point` = ".$pointNum." WHERE `m_username` ='".$user."'";
             $Add = mysql_query($query_Add) or die(mysql_error());

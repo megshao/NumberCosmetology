@@ -3,8 +3,11 @@
     $output = array();
     $saveRooms = '';
     $date = $_POST['date'] ? $_POST['date'] : '';
+    $date = addslashes($date);
     $rooms = $_POST['rooms'] ? $_POST['rooms'] : '';
+    $rooms = addslashes($rooms);
     $user = $_POST['user'] ? $_POST['user'] : '';
+    $user = addslashes($user);
 
     if(!empty($date) && !empty($rooms) && !empty($user)){
         $query_search = "SELECT m_id FROM memberdata WHERE m_username='".$user."'";

@@ -7,6 +7,7 @@
         switch ($fun) {
             case 'date':
                 $date = $_POST['date'] ? $_POST['date'] : '';
+                $date = addslashes($date);
                 if(!empty($date)){
                     $query_search = "SELECT * FROM bookRoom WHERE b_Date='".$date."'";
                     $Search = mysql_query($query_search)or die(mysql_error());
@@ -31,6 +32,7 @@
                 break;
             case 'user':
                 $user = $_POST['username'] ? $_POST['username'] : '';
+                $user = addslashes($user);
                 if (!empty($user)) {
                     $query_search = "SELECT * FROM `bookRoom` WHERE `b_UserID` = (SELECT m_id FROM `memberdata` WHERE m_username = '".$user."') ORDER BY b_Date";
                     $Search = mysql_query($query_search) or die(mysql_error());

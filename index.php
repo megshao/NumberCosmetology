@@ -78,7 +78,7 @@
       <!-- Main hero unit for a primary marketing message or call to action -->
       <div id="home">
         <div class="hero-unit">
-          <h1>高城美容美學教育學院</h1>
+          <h1><img src="img/loftycity.jpg" >高城美容美學教育學院</h1>
           <p>線上服務平台</p>
           <!-- <p><a href="#" class="btn btn-primary btn-large">Learn more &raquo;</a></p>-->
         </div>

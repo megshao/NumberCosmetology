@@ -5,6 +5,10 @@ var sBookItem;
           $("#login").click(function(){  
             var username=$("#l_username").val();
             var password=$("#password").val();
+            var inputCheck=false;
+            if(IsValid(username) && IsValid(password))
+              inputCheck = true;
+            if(inputCheck)
             $.ajax({
               async: false,
               type: "POST",
@@ -28,6 +32,7 @@ var sBookItem;
                  alert("login error");
               }
             });
+            if(inputCheck)
             $.ajax({
                     async: false,
                     url: './api/pointManage.php',
@@ -67,7 +72,7 @@ var sBookItem;
         $("#searchRoom").click(function(event) {
           var date = $("#calendar_input").val();
           iUser = getCookie("user");
-          if(checkinput('date',date)){
+          if(checkinput('date',date) && IsValid(date) && IsValid(iUser)){
             sBookItem = new bookItem(date,iUser);
             $.ajax({
               url: './api/getBooked.php',
@@ -154,7 +159,8 @@ var sBookItem;
         });
 
         $("#sendApply").click(function(event) {
-          if(checkForm()){
+          if(checkForm() && IsValid(document.getElementById('m_username').value) && IsValid(document.getElementById('m_passwd').value) && IsValid(document.getElementById('m_name').value) && IsValid(document.getElementById('m_birthday').value) && IsValid(document.getElementById('m_email').value)
+            && IsValid(document.getElementById('m_phone').value) && IsValid(document.getElementById('m_address').value) ){
             var sex ;
             if(document.getElementById('m_sex').checked)
               sex = '女';
@@ -182,7 +188,8 @@ var sBookItem;
 
         $("#sendUpdate").click(function(event) {
           var userCheck = confirm("確定送出修改?");
-          if(userCheck){
+          if(userCheck && IsValid(getCookie("user")) && IsValid(document.getElementById('up_oldpasswd').value) && IsValid(document.getElementById('up_newpasswd').value) && IsValid(document.getElementById('up_newpasswdrecheck').value) && IsValid(document.getElementById('up_name').value)
+            && IsValid(document.getElementById('up_birthday').value) && IsValid(document.getElementById('up_email').value) && IsValid(document.getElementById('up_phone').value) && IsValid(document.getElementById('up_address').value)){
             if(document.getElementById('up_oldpasswd').value != ''){
               $.ajax({
                 url: "./api/login.php",
@@ -253,6 +260,7 @@ var sBookItem;
           });
 
         $("#addPointBtn").click(function(event) {
+          if(IsValid(getCookie("user")) && IsValid($('#a_username').val()) && IsValid($('#numPoint').val()))
           $.ajax({
             url: './api/pointManage.php',
             type: 'POST',
@@ -477,4 +485,15 @@ var sBookItem;
             return true;
             break;
         }
+      }
+
+      function IsValid(oField){
+        var re = /select|update|delete|exec|count|drop|'|"|=|;|>|<|%/i;
+        var msg = "請勿輸入特殊字符與SQL關鍵字！";
+        if(re.test(oField)){
+          alert(msg);
+          return false;
+        }
+        else 
+          return true;
       }
