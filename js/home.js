@@ -349,6 +349,30 @@ var sBookItem;
            }
           });
         });
+
+        $("#mContact").click(function(event) {
+          if(document.getElementById("ListDiv") != undefined)
+            document.getElementById("sellList").removeChild(document.getElementById("ListDiv"));
+          $.ajax({
+           type: "POST",
+           url: "./api/sellList.php",
+            dataType : "json",
+            data:{},
+           success: function(json){
+            var ListDiv = document.createElement("div");
+            ListDiv.id = "ListDiv";
+            document.getElementById("sellList").appendChild(ListDiv);
+              for(var count = 1;json["data"][count] != undefined ;count++){
+                var createDiv = document.createElement("div");
+                createDiv.innerHTML="<div class='span4' id='sellListDiv"+count+"'><h2>"+json["data"][count]["name"]+"</h2><p>"+json["data"][count]["content"]+"</p><p><img src='upload/"+json['data'][count]['picturename']+"' width='60' height='60'></p></div>";
+                document.getElementById("ListDiv").appendChild(createDiv);
+              }   
+            },
+           error: function() {
+               alert("Manage error");
+           }
+          });
+        });
       });
 
       function getCookie(cname){
