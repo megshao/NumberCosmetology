@@ -24,6 +24,7 @@
     <script src="js/bootstrap.js"></script>
     <script src="js/apply.js"></script>
     <script type="text/javascript" src="js/home.js"></script>
+    <script type="text/javascript" src="js/ajaxfileupload.js"></script>
   </head>
 
   <body onload="doOnLoad();">
@@ -50,6 +51,18 @@
                   <li role="presentation"><a id="a_memberUpdate" role="menuitem" tabindex="-1" href="#" onClick="showLayer(this,'memberUpdate','liMember');">會員資料修改</a></li>
                   <?php if ($_COOKIE['userType'] == 'admin') {?>
                   <li role="presentation"><a id="p_add" role="menuitem" tabindex="-1" href="#" onClick="showLayer(this,'addPoint','liMember');">點數儲值</a></li>
+                  <?php } ?>
+                </ul>
+              </li>
+              <?php } ?>
+              <?php if (($_COOKIE['userType'] == 'admin') || ($_COOKIE['userType'] == 'member')) {?>
+              <li id="liShop" style="display:none" class="dropdown"><a id="mShop" href="#" role="button" class="dropdown-toggle" data-toggle="dropdown" >商品中心<b class="caret"></b></a>
+                <ul class="dropdown-menu" role="menu" aria-labelledby="mShop">
+                  <li role="presentation"><a id="shop_Manage" role="menuitem" tabindex="-1" href="#" onClick="showLayer(this,'m_Manage','liShop');">購物車</a></li>
+                  <li role="presentation"><a id="shop_showPoint" role="menuitem" tabindex="-1" href="#" onClick="showLayer(this,'showPoint','liShop');">交易記錄</a></li>
+                  <li role="presentation"><a id="shop_memberUpdate" role="menuitem" tabindex="-1" href="#" onClick="showLayer(this,'memberUpdate','liShop');">會員資料修改</a></li>
+                  <?php if ($_COOKIE['userType'] == 'admin') {?>
+                  <li role="presentation"><a id="shop_add" role="menuitem" tabindex="-1" href="#" onClick="showLayer(this,'addSellItem','liShop');">新增商品</a></li>
                   <?php } ?>
                 </ul>
               </li>
@@ -215,6 +228,10 @@
 
       <?php if ($_COOKIE['userType'] == 'admin') {?>
       <div id="addPoint" style="display:none"><?php include_once('addPoint.php'); ?></div>
+      <?php } ?>
+
+      <?php if ($_COOKIE['userType'] == 'admin') {?>
+      <div id="addSellItem" style="display:none"><?php include_once('addSellItemPage.php'); ?></div>
       <?php } ?>
 
       <hr>

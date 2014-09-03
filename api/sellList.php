@@ -14,7 +14,7 @@
     $count = 1;
     if(!empty($row_sellList)){
         do{
-            $saveArray[$count] = array("name" => $row_sellList["s_name"], "count" => $row_sellList["s_count"], "content" => $row_sellList["s_content"], "picturename" => $row_sellList["s_pictureName"]);
+            $saveArray[$count] = array("name" => $row_sellList["s_name"],"price" => $row_sellList["s_price"], "count" => $row_sellList["s_count"], "content" => $row_sellList["s_content"], "picturename" => $row_sellList["s_pictureName"]);
             $count++;
         }while ( $row_sellList = mysql_fetch_assoc($sellList));
     }

@@ -56,6 +56,7 @@ var sBookItem;
           document.getElementById('user').innerHTML=getCookie("user");
           document.getElementById('point').innerHTML=getCookie("point")+'點';
           document.getElementById('liMember').style.display="block";
+          document.getElementById('liShop').style.display="block";
           $("#logout").click(function(event) {
             document.cookie = "stat=;";
             document.cookie = "user=;";
@@ -64,6 +65,7 @@ var sBookItem;
             document.getElementById('userDiv').style.display='none';
             document.getElementById('loginDiv').style.display='';
             document.getElementById('liMember').style.display='none';
+            document.getElementById('liMember').style.display="none";
             window.location.reload(true);
             return false;
           });
@@ -364,8 +366,10 @@ var sBookItem;
             document.getElementById("sellList").appendChild(ListDiv);
               for(var count = 1;json["data"][count] != undefined ;count++){
                 var createDiv = document.createElement("div");
-                createDiv.innerHTML="<div class='span4' id='sellListDiv"+count+"'><h2>"+json["data"][count]["name"]+"</h2><p>"+json["data"][count]["content"]+"</p><p><img src='upload/"+json['data'][count]['picturename']+"' width='60' height='60'></p></div>";
+                createDiv.id = "sellListDiv"+count;
+                createDiv.innerHTML="<h2>"+json["data"][count]["name"]+"</h2><p><img class='img-rounded' src='upload/"+json['data'][count]['picturename']+"' width='60' height='60'></p><p>商品簡介："+json["data"][count]["content"]+"</p><p>價錢："+json["data"][count]["price"]+"</p><p>庫存數量："+json["data"][count]["count"]+"</p><p><a href='#' class='btn btn-primary btn-large'>訂購</a></p>";
                 document.getElementById("ListDiv").appendChild(createDiv);
+                document.getElementById(createDiv.id).className="span4";
               }   
             },
            error: function() {
@@ -520,4 +524,24 @@ var sBookItem;
         }
         else 
           return true;
+      }
+
+      function ajaxFileUpload(){
+        $.ajaxFileUpload({
+          url:'.//api/addSellItem.php',
+          secureuri: false,
+          fileElementId: 'uploadfile',
+          type: 'POST',
+          dataType: 'json',
+          data:{name:document.getElementById("u_name").value,price:document.getElementById("u_price").value,count:document.getElementById("u_count").value,content:document.getElementById("u_content").value},
+          success: function(json){
+            if(json['stat'])
+              alert(json['info']);
+            else
+              alert(json['info']);
+          },
+          error: function(date,status,e){
+            alert(e);
+          }
+        })
       }
